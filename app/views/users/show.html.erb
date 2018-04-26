@@ -1,0 +1,51 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong><%= @user.name %></strong>
+</p>
+
+<% if @user.events.empty? %>
+  <p>Add yourself to some events. <%= link_to 'All events', events_path %></p>
+<% else %>
+  <h1>My Schedule:</h1>
+<h2> Happening Now </h2>
+    <% @user.events.where("start <= ? AND end > ?", Time.new, Time.new).sort_by(&:start).each do |event| %>
+        <h4><%= event.name %></h4>
+        Until <%= event.end.strftime("%A, %B %d, %Y, %I:%M") %> (Since <%= event.start.strftime("%A, %B %d, %Y, %I:%M") %>)
+        <%= link_to 'Details', event %>
+        <%= link_to 'Edit', edit_event_path(event) %>
+        <%= link_to 'Delete event', event, method: :delete, data: { confirm: 'Are you sure?' } %>
+        <%= link_to 'Remove from this event', "/users/#{@user.id}/events/#{event.id}", method: :delete %>
+        <hr>
+    <% end %>
+    <br/>
+    <h2> Coming Up </h2>
+    <% @user.events.where("start > ?", Time.new).sort_by(&:start).each do |event| %>
+      <h4><%= event.name %></h4>
+        <%= event.start.strftime("%A, %B %d, %Y, %I:%M") %> until <%= event.end.strftime("%A, %B %d, %Y, %I:%M") %> 
+        <%= link_to 'Details', event %>
+        <%= link_to 'Edit', edit_event_path(event) %>
+        <%= link_to 'Delete event', event, method: :delete, data: { confirm: 'Are you sure?' } %>
+        <%= link_to 'Remove from this event', "/users/#{@user.id}/events/#{event.id}", method: :delete %>
+        <hr>
+    <% end %>
+<% end %>
+
+<h3>Add To Upcoming Event:</h3>
+<%= form_with url: "/users/#{@user.id}/events" do |form| %>
+  <%= form.collection_select :event_id, @events.where("start > ?", Time.new).sort_by(&:start), :id, :name, :prompt => 'Select an event...' %>
+  <%= form.submit 'Add' %>
+<% end %>
+
+<h2> Old Events </h2>
+    <% @events.where("end < ?", Time.new).sort_by(&:start).reverse.each do |event| %>
+      <h4><%= event.name %></h4>
+        <%= event.start %> until <%= event.end %>
+        <%= link_to 'Details', event %>
+        <%= link_to 'Edit', edit_event_path(event) %>
+        <%= link_to 'Delete', event, method: :delete, data: { confirm: 'Are you sure?' } %>
+        <hr>
+    <% end %>
+
+<%= link_to 'Change Name', edit_user_path(@user) %> |
+<%= link_to 'Go to All Users', users_path %>

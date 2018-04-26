@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <h1><%= @event.name %></h1>
+</p>
+
+<p>
+  <strong>From:</strong>
+  <%= @event.start.strftime("%A, %B %d, %Y, %I:%M") %>
+</p>
+
+<p>
+  <strong>Until:</strong>
+  <%= @event.end.strftime("%A, %B %d, %Y, %I:%M") %>
+</p>
+
+<% if @event.users.empty? %>
+  <p>Add users to the event!</p>
+<% else %>
+  <h2>Users:</h2>
+  <ul>
+    <% @event.users.each do |user| %>
+      <li><%= link_to user.name, "/users/#{user.id}" %> | <%= link_to 'Remove from this event', "/events/#{@event.id}/users/#{user.id}", method: :delete %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<h3>Add User:</h3>
+<%= form_with url: "/events/#{@event.id}/users" do |form| %>
+  <%= form.collection_select :user_id, @users, :id, :name, :prompt => 'Select a user...' %>
+  <%= form.submit 'Add' %>
+<% end %>
+
+<%= link_to 'Upudate Details', edit_event_path(@event) %> |
+<%= link_to 'Go to All Events', events_path %>
