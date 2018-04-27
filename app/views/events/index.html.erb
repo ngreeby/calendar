@@ -1,6 +1,6 @@
 <p id="notice"><%= notice %></p>
 
-<h1>Calendar - All Events</h1>
+<h1>All Events</h1>
 <%= link_to 'Create Event', new_event_path %>
 <%= link_to "View Events by User", users_path %>
 
@@ -8,9 +8,18 @@
     <% @events.where("start <= ? AND end > ?", Time.new, Time.new).sort_by(&:start).each do |event| %>
         <h4><%= event.name %></h4>
         Until <%= event.end.strftime("%A, %B %d, %Y, %I:%M") %> (Since <%= event.start.strftime("%A, %B %d, %Y, %I:%M") %>)
-<%= link_to 'Details', event %>
+    <%= link_to 'Details', event %>
         <%= link_to 'Edit', edit_event_path(event) %>
         <%= link_to 'Delete', event, method: :delete, data: { confirm: 'Are you sure?' } %>
+        <p> Users Currently in this Event: </p>
+        <ul>
+            <% event.users.each do |user| %>
+            <li>
+                <%= link_to user.full_name, "/users/#{user.id}" %>
+            </li>
+            <% end %>
+            </ul>
+        </li>
         <hr>
     <% end %>
     <br/>

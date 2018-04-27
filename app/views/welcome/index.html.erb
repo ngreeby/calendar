@@ -1,0 +1,30 @@
+<h1>Calendar</h1>
+<%= link_to "View All Events", events_path %>
+<%= link_to "View All Users", users_path %>
+<h2> Events Happening Now </h2>
+<ul>
+    <% @events.where("start <= ? AND end > ?", Time.new, Time.new).sort_by(&:start).each do |event| %>
+        
+        <li>
+        <h3><%= event.name %></h3>
+        Until <%= event.end.strftime("%A, %B %d, %Y, %I:%M") %> (Since <%= event.start.strftime("%A, %B %d, %Y, %I:%M") %>)
+        <%= link_to 'Details', event %>
+        <ul>
+            <% event.users.each do |user| %>
+            <li>
+                <%= link_to user.full_name, "/users/#{user.id}" %>
+            </li>
+            <% end %>
+            </ul>
+        </li>
+    <% end %>
+</ul>
+
+<h2> Users Not in an Event <h2>
+<ul>
+    <% @free_users.each do |user| %>
+        <li>
+            <%= link_to user.full_name, "/users/#{user.id}" %>
+        </li>
+    <% end %>
+</ul>

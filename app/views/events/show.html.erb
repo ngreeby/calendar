@@ -20,16 +20,19 @@
   <h2>Users:</h2>
   <ul>
     <% @event.users.each do |user| %>
-      <li><%= link_to user.name, "/users/#{user.id}" %> | <%= link_to 'Remove from this event', "/events/#{@event.id}/users/#{user.id}", method: :delete %></li>
+      <li><%= link_to user.full_name, "/users/#{user.id}" %> | <%= link_to 'Remove from this event', "/events/#{@event.id}/users/#{user.id}", method: :delete %></li>
     <% end %>
   </ul>
 <% end %>
 
+<% @unadded_users = @users.select { |u| !@event.users.include? u } %>
+<% if !@unadded_users.empty? %>
 <h3>Add User:</h3>
 <%= form_with url: "/events/#{@event.id}/users" do |form| %>
-  <%= form.collection_select :user_id, @users, :id, :name, :prompt => 'Select a user...' %>
+  <%= form.collection_select :user_id, @unadded_users, :id, :full_name, :prompt => 'Select a user...' %>
   <%= form.submit 'Add' %>
 <% end %>
+<% end %>
 
-<%= link_to 'Upudate Details', edit_event_path(@event) %> |
+<%= link_to 'Update Details', edit_event_path(@event) %> |
 <%= link_to 'Go to All Events', events_path %>
